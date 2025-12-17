@@ -1,0 +1,176 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row mb-5">
+    <div class="col-md-12">
+        <h2 class="display-6 fw-bold text-primary">Admin Dashboard</h2>
+        <p class="text-muted">Overview of platform activity and pending actions.</p>
+    </div>
+</div>
+
+<!-- KPI Cards -->
+<div class="row g-4 mb-5">
+    <div class="col-md-3">
+        <div class="stat-card primary shadow-lg">
+            <div class="stat-value">{{ total_students }}</div>
+            <div class="stat-label">Total Students</div>
+            <i class="bi bi-people-fill opacity-25 float-end fs-1 mt-n3"></i>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card success shadow-lg">
+            <div class="stat-value">{{ total_alumni }}</div>
+            <div class="stat-label">Alumni Network</div>
+            <i class="bi bi-mortarboard-fill opacity-25 float-end fs-1 mt-n3"></i>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card warning shadow-lg">
+            <div class="stat-value">{{ total_jobs }}</div>
+            <div class="stat-label">Jobs Posted</div>
+            <i class="bi bi-briefcase-fill opacity-25 float-end fs-1 mt-n3"></i>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card info shadow-lg">
+            <div class="stat-value">{{ verified_jobs }}</div>
+            <div class="stat-label">Active Opportunities</div>
+            <i class="bi bi-check-circle-fill opacity-25 float-end fs-1 mt-n3"></i>
+        </div>
+    </div>
+</div>
+
+<!-- Charts Row -->
+<div class="row g-4 mb-5">
+    <div class="col-md-8">
+        <div class="card h-100 shadow-sm">
+            <div class="card-header bg-white">
+                <h5 class="mb-0">Placement Trends (2024-2025)</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="placementChart"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card h-100 shadow-sm">
+            <div class="card-header bg-white">
+                <h5 class="mb-0">Student Distribution</h5>
+            </div>
+            <div class="card-body d-flex align-items-center justify-content-center">
+                <canvas id="branchChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Pending Actions -->
+<div class="row g-4">
+    <div class="col-md-6">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Pending User Verifications</h5>
+                <span class="badge bg-danger rounded-pill">{{ pending_users.count }}</span>
+            </div>
+            <div class="card-body p-0">
+                <div class="list-group list-group-flush">
+                    {% for user in pending_users %}
+                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="fw-bold">{{ user.get_full_name|default:user.username }}</div>
+                            <small class="text-muted">{{ user.role|title }} &bull; {{ user.email }}</small>
+                        </div>
+                        <form action="{% url 'verify_user' user.pk %}" method="post">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-sm btn-outline-success">Verify</button>
+                        </form>
+                    </div>
+                    {% empty %}
+                    <div class="p-4 text-center text-muted">All users verified.</div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Pending Job Approvals</h5>
+                <span class="badge bg-warning text-dark rounded-pill">{{ pending_jobs.count }}</span>
+            </div>
+            <div class="card-body p-0">
+                <div class="list-group list-group-flush">
+                    {% for job in pending_jobs %}
+                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="fw-bold">{{ job.title }}</div>
+                            <small class="text-muted">{{ job.company }} &bull; {{ job.posted_by.get_full_name }}</small>
+                        </div>
+                        <form action="{% url 'verify_job' job.pk %}" method="post">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-sm btn-outline-success">Approve</button>
+                        </form>
+                    </div>
+                    {% empty %}
+                    <div class="p-4 text-center text-muted">No pending jobs.</div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Placement Chart (Mock Data for Aesthetics as requested)
+    const ctxPlacement = document.getElementById('placementChart').getContext('2d');
+    new Chart(ctxPlacement, {
+        type: 'bar',
+        data: {
+            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+            datasets: [{
+                label: 'Placements',
+                data: [12, 19, 15, 25, 22, 30],
+                backgroundColor: 'rgba(79, 70, 229, 0.8)',
+                borderRadius: 4
+            }, {
+                label: 'Internships',
+                data: [8, 12, 10, 15, 20, 25],
+                backgroundColor: 'rgba(16, 185, 129, 0.8)',
+                borderRadius: 4
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: { legend: { position: 'bottom' } },
+            scales: { y: { beginAtZero: true, grid: { display: false } }, x: { grid: { display: false } } }
+        }
+    });
+
+    // Branch Distribution Chart (Real Data)
+    const ctxBranch = document.getElementById('branchChart').getContext('2d');
+    new Chart(ctxBranch, {
+        type: 'doughnut',
+        data: {
+            labels: ['CSE', 'ECE', 'ME', 'CE', 'EE'],
+            datasets: [{
+                data: [
+                    {{ branch_distribution.CSE }},
+            {{ branch_distribution.ECE }},
+                    {{ branch_distribution.ME }},
+        {{ branch_distribution.CE }},
+        {{ branch_distribution.EE }}
+                ],
+        backgroundColor: [
+        '#4f46e5', '#ec4899', '#f59e0b', '#10b981', '#6366f1'
+    ],
+        borderWidth: 0
+            }]
+        },
+        options: {
+        responsive: true,
+        plugins: { legend: { position: 'bottom' } },
+        cutout: '70%'
+    }
+    });
+</script>
+{% endblock %}

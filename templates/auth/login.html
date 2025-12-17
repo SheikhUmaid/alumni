@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row justify-content-center align-items-center" style="min-height: 70vh;">
+    <div class="col-md-5">
+        <div class="card shadow-lg border-0">
+            <div class="card-body p-5">
+                <div class="text-center mb-4">
+                    <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-inline-flex align-items-center justify-content-center mb-3"
+                        style="width: 64px; height: 64px;">
+                        <i class="bi bi-person-fill fs-2"></i>
+                    </div>
+                    <h2 class="fw-bold">Welcome Back</h2>
+                    <p class="text-muted">Sign in to access your dashboard.</p>
+                </div>
+
+                <form method="post">
+                    {% csrf_token %}
+                    {% if form.non_field_errors %}
+                    <div class="alert alert-danger">{{ form.non_field_errors }}</div>
+                    {% endif %}
+
+                    <div class="mb-3">
+                        <label class="form-label text-muted small fw-bold text-uppercase">Email or Username</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light border-end-0"><i class="bi bi-envelope"></i></span>
+                            {{ form.username }}
+                        </div>
+                        {{ form.username.errors }}
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label text-muted small fw-bold text-uppercase">Password</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light border-end-0"><i class="bi bi-lock"></i></span>
+                            {{ form.password }}
+                        </div>
+                        {{ form.password.errors }}
+                    </div>
+
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary btn-lg">Sign In</button>
+                    </div>
+                </form>
+            </div>
+            <div class="card-footer bg-light p-4 text-center border-0 rounded-bottom">
+                <small class="text-muted">Don't have an account? <a href="{% url 'register' %}"
+                        class="fw-bold text-decoration-none">Create Account</a></small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Add bootstrap classes to form fields rendered by Django
+    document.querySelectorAll('input').forEach(input => {
+        if (!input.classList.contains('form-control')) {
+            input.classList.add('form-control');
+            input.classList.add('border-start-0');
+        }
+    });
+</script>
+{% endblock %}

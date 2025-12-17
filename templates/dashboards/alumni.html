@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row align-items-center mb-5">
+    <div class="col-md-8">
+        <h2 class="display-6 fw-bold text-success">Alumni Dashboard</h2>
+        <p class="text-muted">Welcome back, <span class="fw-semibold text-dark">{{
+                user.get_full_name|default:user.username }}</span></p>
+    </div>
+    <div class="col-md-4 text-md-end">
+        <a href="{% url 'job_create' %}" class="btn btn-success shadow-sm"><i class="bi bi-plus-lg me-2"></i>Post
+            Job</a>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Stats Row -->
+    <div class="col-12 mb-2">
+        <div class="row g-4">
+            <div class="col-md-6">
+                <div class="stat-card primary p-4 rounded-4 shadow-md">
+                    <div class="stat-value">{{ posted_jobs.count }}</div>
+                    <div class="stat-label">Jobs Posted</div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="stat-card info p-4 rounded-4 shadow-md">
+                    <div class="stat-value">{{ mentorship.max_mentees|default:"0" }}</div>
+                    <div class="stat-label">Mentees Supported</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-12">
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-white border-0 pt-4 px-4">
+                <h5 class="fw-bold mb-0">Your Job Postings</h5>
+            </div>
+            <div class="card-body px-4 pb-4">
+                {% if posted_jobs %}
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead class="text-muted text-uppercase small">
+                            <tr>
+                                <th class="border-0">Title</th>
+                                <th class="border-0">Company</th>
+                                <th class="border-0">Status</th>
+                                <th class="border-0">Applicants</th>
+                                <th class="border-0 text-end">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for job in posted_jobs %}
+                            <tr>
+                                <td class="fw-bold">{{ job.title }}</td>
+                                <td>{{ job.company }}</td>
+                                <td>
+                                    {% if job.is_verified %}
+                                    <span
+                                        class="badge bg-success-subtle text-success border border-success-subtle rounded-pill">Active</span>
+                                    {% else %}
+                                    <span
+                                        class="badge bg-warning-subtle text-warning border border-warning-subtle rounded-pill">Pending</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ job.applications.count }}</td>
+                                <td class="text-end">
+                                    <a href="{% url 'job_detail' job.pk %}"
+                                        class="btn btn-sm btn-outline-secondary">View</a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-5">
+                    <p class="text-muted">You haven't posted any jobs yet.</p>
+                    <a href="{% url 'job_create' %}" class="btn btn-success">Post Your First Job</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

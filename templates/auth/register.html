@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row justify-content-center my-5">
+    <div class="col-md-6">
+        <div class="card shadow-lg border-0">
+            <div class="card-body p-5">
+                <div class="text-center mb-4">
+                    <div class="bg-success bg-opacity-10 text-success rounded-circle d-inline-flex align-items-center justify-content-center mb-3"
+                        style="width: 64px; height: 64px;">
+                        <i class="bi bi-person-plus-fill fs-2"></i>
+                    </div>
+                    <h2 class="fw-bold">Join the Community</h2>
+                    <p class="text-muted">Create your account to connect with alumni and find opportunities.</p>
+                </div>
+
+                <form method="post">
+                    {% csrf_token %}
+
+                    {% for field in form %}
+                    <div class="mb-3" id="div_{{ field.name }}">
+                        <label class="form-label text-muted small fw-bold text-uppercase">{{ field.label }}</label>
+                        {{ field }}
+                        {% if field.help_text %}
+                        <small class="form-text text-muted">{{ field.help_text }}</small>
+                        {% endif %}
+                        {% for error in field.errors %}
+                        <div class="text-danger small mt-1">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    {% endfor %}
+
+                    <div class="d-grid mt-4">
+                        <button type="submit" class="btn btn-primary btn-lg">Create Account</button>
+                    </div>
+                </form>
+            </div>
+            <div class="card-footer bg-light p-4 text-center border-0 rounded-bottom">
+                <small class="text-muted">Already a member? <a href="{% url 'login' %}"
+                        class="fw-bold text-decoration-none">Sign In</a></small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Add bootstrap classes
+        document.querySelectorAll('input, select').forEach(el => {
+            el.classList.add('form-control');
+        });
+
+        const roleField = document.querySelector('select[name="role"]');
+        const branchDiv = document.getElementById('div_branch');
+        const gradYearDiv = document.getElementById('div_graduation_year');
+
+        function toggleFields() {
+            if (roleField.value === 'student') {
+                branchDiv.style.display = 'block';
+                gradYearDiv.style.display = 'none';
+            } else if (roleField.value === 'alumni') {
+                branchDiv.style.display = 'none';
+                gradYearDiv.style.display = 'block';
+            } else {
+                branchDiv.style.display = 'none';
+                gradYearDiv.style.display = 'none';
+            }
+        }
+
+        if (roleField) {
+            toggleFields();
+            roleField.addEventListener('change', toggleFields);
+        }
+    });
+</script>
+{% endblock %}

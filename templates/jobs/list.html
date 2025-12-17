@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row mb-5 align-items-end">
+    <div class="col-md-8">
+        <h2 class="display-6 fw-bold text-primary">Job Opportunities</h2>
+        <p class="text-muted">Explore career options and internships tailored for you.</p>
+    </div>
+    <div class="col-md-4">
+        <form method="get" class="d-flex shadow-sm rounded-3 overflow-hidden">
+            <select name="branch" class="form-select border-0 bg-white" onchange="this.form.submit()">
+                <option value="">All Branches</option>
+                <option value="CSE" {% if current_branch == 'CSE' %}selected{% endif %}>CSE</option>
+                <option value="ECE" {% if current_branch == 'ECE' %}selected{% endif %}>ECE</option>
+                <option value="ME" {% if current_branch == 'ME' %}selected{% endif %}>ME</option>
+                <option value="CE" {% if current_branch == 'CE' %}selected{% endif %}>CE</option>
+                <option value="EE" {% if current_branch == 'EE' %}selected{% endif %}>EE</option>
+            </select>
+            <button type="submit" class="btn btn-primary px-4"><i class="bi bi-filter"></i></button>
+        </form>
+    </div>
+</div>
+
+<div class="row g-4">
+    {% for job in jobs %}
+    <div class="col-md-6 col-lg-4">
+        <div class="card h-100 shadow-sm border-0 position-relative top-hover">
+            <div class="card-body p-4 d-flex flex-column">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div class="bg-light rounded-3 p-3 text-primary">
+                        <i class="bi bi-building fs-4"></i>
+                    </div>
+                    {% if job.created_at|timesince < "7 days" %} <span
+                        class="badge bg-success-subtle text-success border border-success-subtle rounded-pill small">
+                        New</span>
+                        {% endif %}
+                </div>
+
+                <h5 class="fw-bold text-dark mb-1">{{ job.title }}</h5>
+                <p class="text-muted small mb-3">{{ job.company }}</p>
+
+                <div class="mt-auto">
+                    <div class="d-flex flex-wrap gap-2 mb-4">
+                        <span class="badge bg-light text-dark border fw-normal">{{ job.get_job_type_display }}</span>
+                        {% if job.branch %}
+                        <span class="badge bg-primary-subtle text-primary border border-primary-subtle fw-normal">{{
+                            job.branch }}</span>
+                        {% endif %}
+                        <span class="badge bg-light text-muted border fw-normal"><i class="bi bi-geo-alt me-1"></i>{{
+                            job.location }}</span>
+                    </div>
+
+                    <a href="{% url 'job_detail' job.pk %}" class="btn btn-outline-primary w-100">View Details</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12 text-center py-5">
+        <div class="mb-3"><i class="bi bi-search fs-1 text-muted opacity-25"></i></div>
+        <h4 class="text-muted">No jobs found</h4>
+        <p class="text-muted">Try adjusting your branch filter.</p>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

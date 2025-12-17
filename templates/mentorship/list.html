@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Mentorship Programs</h2>
+<div class="row">
+    {% for mentor in mentors %}
+    <div class="col-md-4 mb-3">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title">{{ mentor.mentor.get_full_name }}</h5>
+                <h6 class="card-subtitle mb-2 text-muted">{{ mentor.mentor.email }}</h6>
+                <p class="card-text"><strong>Expertise:</strong> {{ mentor.expertise_areas }}</p>
+                <p class="card-text"><strong>Availability:</strong> {{ mentor.availability }}</p>
+            </div>
+            <div class="card-footer">
+                <small class="text-muted">Max Mentees: {{ mentor.max_mentees }}</small>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <p>No mentors available at the moment.</p>
+    {% endfor %}
+</div>
+{% endblock %}
